@@ -21,7 +21,7 @@ $myUpdateChecker = PucFactory::buildUpdateChecker(
 
 $myUpdateChecker->setBranch('main');
 
-// 管理画面用のスタイルとスクリプトをエンキュー
+// 管理画面用のスタイルとスクリプト
 function custom_ad_plugin_admin_scripts() {
     wp_enqueue_style('custom-content-label-plugin-admin', plugins_url('frontend-style.css', __FILE__));
     wp_enqueue_script('custom-content-label-plugin-admin', plugins_url('noteadplus-scripts.js', __FILE__), array('jquery'));
