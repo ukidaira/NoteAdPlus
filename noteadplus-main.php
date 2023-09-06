@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 /*
 Plugin Name: NoteAdPlus
 Description: 景品表示法に対応するためのテキスト表示を管理するプラグイン
-Version: 1.0.4
+Version: 1.0.5
 Author: ukidaira
 */
 
@@ -60,7 +60,9 @@ function custom_ad_shortcode_function() {
     $textAlign = isset($options['text_align']) ? $options['text_align'] : 'center';
     $width = isset($options['width']) ? $options['width'] : '6'; 
     $boxAlign = isset($options['box_align']) ? $options['box_align'] : 'left';
-    $ad_style = "width: {$width}%; border: {$borderWidth}px {$border_style} {$border_color}; background-color: {$bg_color}; color: {$text_color}; font-size: {$fontSize}px; border-radius: {$borderRadius}px; margin: {$margin}px; padding: {$padding}px; text-align: {$textAlign};";
+    $margin_values = explode(',', $options['margin']);
+$margin_style = implode('px ', $margin_values) . 'px';
+$ad_style = "width: {$width}%; border: {$borderWidth}px {$border_style} {$border_color}; background-color: {$bg_color}; color: {$text_color}; font-size: {$fontSize}px; border-radius: {$borderRadius}px; margin: {$margin_style}; padding: {$padding}px; text-align: {$textAlign};";
     $ad_html = '<div class="ad-container ' . $boxAlign . '">
                     <div class="custom-content-label" style="' . $ad_style . '">' . $ad_text . '</div>
                 </div>';
@@ -315,19 +317,14 @@ $wp_customize->add_control('custom_ad_plugin_padding_control', array(
 
 // 枠の外側の余白の設定
 $wp_customize->add_setting('custom_ad_plugin_options[margin]', array(
-    'default' => '0',
+    'default' => '0,0,0,0',
     'type' => 'option',
 ));
 $wp_customize->add_control('custom_ad_plugin_margin_control', array(
-    'label' => '枠の外側の余白（px）',
+    'label' => '枠外側の上,右,下,左の余白（px）',
     'section' => 'custom_ad_plugin_section',
     'settings' => 'custom_ad_plugin_options[margin]',
-    'type' => 'number',
-    'input_attrs' => array(
-        'min' => 0,
-        'max' => 100,
-        'step' => 1,
-    ),
+    'type' => 'text',
 ));
 
 // 位置の設定
@@ -381,7 +378,7 @@ class Reset_Button_Custom_Control extends WP_Customize_Control {
     public function render_content() {
         echo '<label>';
         echo '<span class="customize-control-title">' . esc_html($this->label) . '</span>';
-        echo '<input type="button" value="デザインをリセット" class="button button-secondary reset-design-button">';
+        echo '<input type="button" value="設定をリセット" class="button button-secondary reset-design-button">';
         echo '</label>';
     }
 }

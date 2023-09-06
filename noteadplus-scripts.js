@@ -32,7 +32,7 @@ jQuery(document).ready(function($) {
             wp.customize('custom_ad_plugin_options[border_width]').set('1');
             wp.customize('custom_ad_plugin_options[border_radius]').set('0');
             wp.customize('custom_ad_plugin_options[padding]').set('0');
-            wp.customize('custom_ad_plugin_options[margin]').set('0');
+            wp.customize('custom_ad_plugin_options[margin]').set('0,0,0,0');
             wp.customize('custom_ad_plugin_options[box_align]').set('left');
             wp.customize('custom_ad_plugin_options[display]').set('on');
             wp.customize('custom_ad_plugin_options[displayed_post_checkbox]').set('');
