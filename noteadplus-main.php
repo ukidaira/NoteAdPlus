@@ -14,12 +14,15 @@ require 'updater/plugin-update-checker.php';
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
 $myUpdateChecker = PucFactory::buildUpdateChecker(
-	'https://toach.click/toys-box/NoteAdPlus.json',
+	'https://github.com/ukidaira/NoteAdPlus/',
 	__FILE__,
 	'NoteAdPlus'
 );
 
-// 管理画面用のスタイルとスクリプトをエンキュー
+$myUpdateChecker->setBranch('main');
+
+// 管理画面用のスタイルとスクリプト
+
 function custom_ad_plugin_admin_scripts() {
     wp_enqueue_style('custom-content-label-plugin-admin', plugins_url('frontend-style.css', __FILE__));
     wp_enqueue_script('custom-content-label-plugin-admin', plugins_url('noteadplus-scripts.js', __FILE__), array('jquery'));
