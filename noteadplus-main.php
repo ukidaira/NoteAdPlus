@@ -14,7 +14,7 @@ require 'updater/plugin-update-checker.php';
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
 $myUpdateChecker = PucFactory::buildUpdateChecker(
-	'https://toach.click/toys-box/NoteAdPlus.json',
+	'https://github.com/ukidaira/NoteAdPlus/',
 	__FILE__,
 	'NoteAdPlus'
 );
