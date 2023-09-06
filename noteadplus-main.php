@@ -37,7 +37,7 @@ add_action('admin_enqueue_scripts', 'custom_ad_plugin_admin_scripts');
 function custom_ad_plugin_frontend_scripts() {
     wp_enqueue_style('custom-content-label-plugin-frontend', plugins_url('frontend-style.css', __FILE__));
 }
-add_action('wp_enqueue_scripts', 'custom_ad_plugin_frontend_scripts');
+add_action('wp_enqueue_scripts', 'custom_ad_plugin_frontend_scripts', 100);
 
 /// カスタム広告を表示するショートコード
 function custom_ad_shortcode_function() {
@@ -61,8 +61,8 @@ function custom_ad_shortcode_function() {
     $width = isset($options['width']) ? $options['width'] : '6'; 
     $boxAlign = isset($options['box_align']) ? $options['box_align'] : 'left';
     $margin_values = explode(',', $options['margin']);
-$margin_style = implode('px ', $margin_values) . 'px';
-$ad_style = "width: {$width}%; border: {$borderWidth}px {$border_style} {$border_color}; background-color: {$bg_color}; color: {$text_color}; font-size: {$fontSize}px; border-radius: {$borderRadius}px; margin: {$margin_style}; padding: {$padding}px; text-align: {$textAlign};";
+    $margin_style = implode('px ', $margin_values) . 'px';
+    $ad_style = "width: {$width}%; border: {$borderWidth}px {$border_style} {$border_color}; background-color: {$bg_color}; color: {$text_color}; font-size: {$fontSize}px; border-radius: {$borderRadius}px; margin: {$margin_style} !important; padding: {$padding}px; text-align: {$textAlign};";
     $ad_html = '<div class="ad-container ' . $boxAlign . '">
                     <div class="custom-content-label" style="' . $ad_style . '">' . $ad_text . '</div>
                 </div>';
