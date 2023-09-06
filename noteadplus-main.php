@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 /*
 Plugin Name: NoteAdPlus
 Description: 景品表示法に対応するためのテキスト表示を管理するプラグイン
-Version: 1.0.1
+Version: 1.0.2
 Author: ukidaira
 */
 
@@ -182,7 +182,7 @@ $wp_customize->add_control('custom_ad_plugin_ad_text_control', array(
 
 // 幅の設定
 $wp_customize->add_setting('custom_ad_plugin_options[width]', array(
-    'default' => '10%',  // ％をデフォルトに設定
+    'default' => '10',  // ％をデフォルトに設定
     'type' => 'option',
 ));
 $wp_customize->add_control('custom_ad_plugin_width_control', array(
