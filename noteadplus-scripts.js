@@ -21,15 +21,24 @@ jQuery(document).ready(function($) {
     $(document).on('click', '.reset-design-button', function() {
         if (confirm('デザインの設定をリセットしますか？')) {
             // カスタマイザーの各設定をデフォルトにリセット
-            wp.customize('custom_ad_plugin_options[ad_text]').set('広告'); // デフォルトの「広告」に設定をリセット
-            wp.customize('custom_ad_plugin_options[width]').set('10');     // デフォルトの「10」に設定をリセット
-            // 他の設定も同様にデフォルトにリセット
+            wp.customize('custom_ad_plugin_options[position]').set('above_title');
+            wp.customize('custom_ad_plugin_options[ad_text]').set('広告');
+            wp.customize('custom_ad_plugin_options[width]').set('6');
+            wp.customize('custom_ad_plugin_options[bg_color]').set('#FFFFFF');
+            wp.customize('custom_ad_plugin_options[text_color]').set('#333333');
+            wp.customize('custom_ad_plugin_options[border_color]').set('#333333');
+            wp.customize('custom_ad_plugin_options[border_style]').set('solid');
+            wp.customize('custom_ad_plugin_options[font_size]').set('14');
+            wp.customize('custom_ad_plugin_options[border_width]').set('1');
+            wp.customize('custom_ad_plugin_options[border_radius]').set('0');
+            wp.customize('custom_ad_plugin_options[padding]').set('0');
+            wp.customize('custom_ad_plugin_options[margin]').set('0');
+            wp.customize('custom_ad_plugin_options[box_align]').set('left');
+            wp.customize('custom_ad_plugin_options[display]').set('on');
+            wp.customize('custom_ad_plugin_options[displayed_post_checkbox]').set('');
+            $('.post-checkbox').prop('checked', false);
+
             wp.customize.previewer.refresh(); // プレビューを更新
         }
     });
 });
-
-function custom_ad_plugin_customizer_script() {
-    wp_enqueue_script('custom-ad-plugin-customizer', plugins_url('noteadplus-scripts.js', __FILE__), array('jquery', 'customize-preview'));
-}
-add_action('customize_preview_init', 'custom_ad_plugin_customizer_script');

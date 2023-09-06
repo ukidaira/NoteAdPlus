@@ -1,12 +1,13 @@
 <?php
+// プラグインファイルへの直接アクセスを防止
 if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly
+    exit; // 直接アクセスが試みられた場合は終了
 }
 
 /*
 Plugin Name: NoteAdPlus
 Description: 景品表示法に対応するためのテキスト表示を管理するプラグイン
-Version: 1.0.3
+Version: 1.0.4
 Author: ukidaira
 */
 
@@ -21,9 +22,8 @@ $myUpdateChecker = PucFactory::buildUpdateChecker(
 
 $myUpdateChecker->setBranch('main');
 
+
 // 管理画面用のスタイルとスクリプト
-
-
 function custom_ad_plugin_admin_scripts() {
     wp_enqueue_style('custom-content-label-plugin-admin', plugins_url('frontend-style.css', __FILE__));
     wp_enqueue_script('custom-content-label-plugin-admin', plugins_url('noteadplus-scripts.js', __FILE__), array('jquery'));
@@ -47,20 +47,19 @@ function custom_ad_shortcode_function() {
         return ''; // テキストを表示しない場合、何も返さない
     }
     
-    $ad_text = isset($options['ad_text']) ? $options['ad_text'] : '広告'; // デフォルトのテキスト
+    $ad_text = isset($options['ad_text']) ? $options['ad_text'] : '広告'; 
     $border_style = isset($options['border_style']) ? $options['border_style'] : 'solid';
     $border_color = isset($options['border_color']) ? $options['border_color'] : '#000000';
     $bg_color = isset($options['bg_color']) ? $options['bg_color'] : '#FFFFFF';
     $text_color = isset($options['text_color']) ? $options['text_color'] : '#000000';
-    $fontSize = isset($options['font_size']) ? $options['font_size'] : '16';
+    $fontSize = isset($options['font_size']) ? $options['font_size'] : '14';
     $borderRadius = isset($options['border_radius']) ? $options['border_radius'] : '0';
     $borderWidth = isset($options['border_width']) ? $options['border_width'] : '1';
-    $margin = isset($options['margin']) ? $options['margin'] : '10';
-    $padding = isset($options['padding']) ? $options['padding'] : '10';
+    $margin = isset($options['margin']) ? $options['margin'] : '0';
+    $padding = isset($options['padding']) ? $options['padding'] : '0';
     $textAlign = isset($options['text_align']) ? $options['text_align'] : 'center';
-    $width = isset($options['width']) ? $options['width'] : '100'; // デフォルトの幅は100px
-
-    $boxAlign = isset($options['box_align']) ? $options['box_align'] : 'center';
+    $width = isset($options['width']) ? $options['width'] : '6'; 
+    $boxAlign = isset($options['box_align']) ? $options['box_align'] : 'left';
     $ad_style = "width: {$width}%; border: {$borderWidth}px {$border_style} {$border_color}; background-color: {$bg_color}; color: {$text_color}; font-size: {$fontSize}px; border-radius: {$borderRadius}px; margin: {$margin}px; padding: {$padding}px; text-align: {$textAlign};";
     $ad_html = '<div class="ad-container ' . $boxAlign . '">
                     <div class="custom-content-label" style="' . $ad_style . '">' . $ad_text . '</div>
@@ -78,7 +77,6 @@ function custom_ad_add_to_content( $content ) {
 
     // 「全ての記事」が選択されている場合、全ての記事に表示
     if (in_array('all', $selected_post_ids)) {
-        // 以下のコードは変わらない...
     } else {
         // 現在の投稿IDが選択された投稿の中に含まれていない場合、広告を表示しない
         if (!empty($selected_post_ids) && !in_array(get_the_ID(), $selected_post_ids)) {
@@ -91,7 +89,7 @@ function custom_ad_add_to_content( $content ) {
         return $content; // 広告を表示しない設定の場合、コンテンツをそのまま返す
     }
 
-    // ここで広告コードを生成（例として、固定のテキスト「広告」を使用）
+    // 広告コードを生成
     $ad_content = do_shortcode('[custom_ad]');
 
     // 広告の表示位置に応じて、広告を追加
@@ -101,9 +99,8 @@ function custom_ad_add_to_content( $content ) {
                 return $ad_content . $content;
             case 'below_title':
                 // 実際のタイトルの直後に広告を挿入する方法はテーマによって異なるため、
-                // ここでは単純にコンテンツの前に追加しています。
+                // ここでは単純にコンテンツの前に追加。
                 return $content . $ad_content;
-            // ... その他の位置を追加する場合
         }
     }
 
@@ -182,7 +179,7 @@ $wp_customize->add_control('custom_ad_plugin_ad_text_control', array(
 
 // 幅の設定
 $wp_customize->add_setting('custom_ad_plugin_options[width]', array(
-    'default' => '10',  // ％をデフォルトに設定
+    'default' => '6',  // ％をデフォルトに設定
     'type' => 'option',
 ));
 $wp_customize->add_control('custom_ad_plugin_width_control', array(
@@ -250,14 +247,14 @@ $wp_customize->add_control('custom_ad_plugin_border_style_control', array(
 
 // フォントサイズの設定
 $wp_customize->add_setting('custom_ad_plugin_options[font_size]', array(
-    'default' => '16',
+    'default' => '14',
     'type' => 'option',
 ));
 $wp_customize->add_control('custom_ad_plugin_font_size_control', array(
     'label' => '表示テキストのフォントサイズ（px）',
     'section' => 'custom_ad_plugin_section',
     'settings' => 'custom_ad_plugin_options[font_size]',
-    'type' => 'number',  // 'text'から'number'に変更
+    'type' => 'number',
     'input_attrs' => array(
         'min' => 8,
         'max' => 50,
@@ -366,10 +363,6 @@ $wp_customize->add_control('custom_ad_plugin_display_control', array(
     ),
 ));
 
-$wp_customize->add_setting('custom_ad_plugin_options[displayed_post_dropdown]', array(
-    'default' => '',
-    'type' => 'option',
-));
 
 $wp_customize->add_setting('custom_ad_plugin_options[displayed_post_checkbox]', array(
     'default' => '',
@@ -381,8 +374,6 @@ $wp_customize->add_control(new Posts_Checkbox_Custom_Control($wp_customize, 'cus
     'section' => 'custom_ad_plugin_section',
     'settings' => 'custom_ad_plugin_options[displayed_post_checkbox]',
 )));
-
-// ... 既存のカスタマイザーの設定の後 ...
 
 class Reset_Button_Custom_Control extends WP_Customize_Control {
     public $type = 'reset-button';
