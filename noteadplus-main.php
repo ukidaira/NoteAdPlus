@@ -19,6 +19,8 @@ $myUpdateChecker = PucFactory::buildUpdateChecker(
 	'NoteAdPlus'
 );
 
+$myUpdateChecker->setBranch('main');
+
 // 管理画面用のスタイルとスクリプトをエンキュー
 function custom_ad_plugin_admin_scripts() {
     wp_enqueue_style('custom-content-label-plugin-admin', plugins_url('frontend-style.css', __FILE__));
