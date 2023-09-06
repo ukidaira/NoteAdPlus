@@ -1,7 +1,7 @@
 {
 	"name": "NoteAdPlus",
 	"version": "1.0",
-	"download_url": "https://toach.click/toys-box/NoteAdPlus.zip",
+	"download_url": "https://github.com/ukidaira/NoteAdPlus/archive/refs/heads/main.zip",
 	"sections": {
 		"description": "景品表示法に対応するためのテキスト表示を管理するプラグイン"
 	}
