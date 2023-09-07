@@ -18,3 +18,10 @@ body .ad-container.center {
 body .ad-container.right {
     text-align: right;
 }
+
+/* スマホ用のスタイル */
+@media only screen and (max-width: 600px) {
+    body .custom-content-label {
+        min-width: 40px !important;
+    }
+}

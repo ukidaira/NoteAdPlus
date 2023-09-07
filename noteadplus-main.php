@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 /*
 Plugin Name: NoteAdPlus
 Description: 景品表示法に対応するためのテキスト表示を管理するプラグイン
-Version: 1.0.6
+Version: 1.0.7
 Author: ukidaira
 */
 
@@ -400,6 +400,7 @@ $wp_customize->add_control(new Reset_Button_Custom_Control($wp_customize, 'custo
 }
 
 add_action('customize_register', 'custom_ad_plugin_customize_register');
+
 
 // プラグインが削除されたときに実行する関数
 function custom_ad_plugin_uninstall() {
