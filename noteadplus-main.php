@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 /*
 Plugin Name: NoteAdPlus
 Description: 景品表示法に対応するためのテキスト表示を管理するプラグイン
-Version: 1.0.7
+Version: 1.0.8
 Author: ukidaira
 */
 
@@ -59,7 +59,12 @@ function custom_ad_shortcode_function() {
     $padding = isset($options['padding']) ? $options['padding'] : '0';
     $textAlign = isset($options['text_align']) ? $options['text_align'] : 'center';
     $width = isset($options['width']) ? $options['width'] : '6'; 
-    $boxAlign = isset($options['box_align']) ? $options['box_align'] : 'left';
+if (isset($options['position_align'])) {
+    $boxAlignParts = explode('_', $options['position_align']);
+    $boxAlign = end($boxAlignParts);
+} else {
+    $boxAlign = 'left';
+}
     $margin_values = explode(',', $options['margin']);
     $margin_style = implode('px ', $margin_values) . 'px';
     $ad_style = "width: {$width}%; border: {$borderWidth}px {$border_style} {$border_color}; background-color: {$bg_color}; color: {$text_color}; font-size: {$fontSize}px; border-radius: {$borderRadius}px; margin: {$margin_style} !important; padding: {$padding}px; text-align: {$textAlign};";
@@ -94,17 +99,19 @@ function custom_ad_add_to_content( $content ) {
     // 広告コードを生成
     $ad_content = do_shortcode('[custom_ad]');
 
-    // 広告の表示位置に応じて、広告を追加
-    if (isset($options['position'])) {
-        switch ($options['position']) {
-            case 'above_title':
+// 広告の表示位置と位置に応じて、広告を追加
+    if (isset($options['position_align'])) {
+        switch ($options['position_align']) {
+            case 'above_title_left':
+            case 'above_title_center':
+            case 'above_title_right':
                 return $ad_content . $content;
-            case 'below_title':
-                // 実際のタイトルの直後に広告を挿入する方法はテーマによって異なるため、
-                // ここでは単純にコンテンツの前に追加。
+            case 'below_title_left':
+            case 'below_title_center':
+            case 'below_title_right':
                 return $content . $ad_content;
         }
-    }
+}
 
     return $content;
 }
@@ -151,19 +158,50 @@ class Posts_Checkbox_Custom_Control extends WP_Customize_Control {
         'priority' => 30,
     ));
 
-    // 表示位置の設定とコントロールを追加
-$wp_customize->add_setting('custom_ad_plugin_options[position]', array(
-    'default' => 'above_title',
+    // テキストの表示の設定
+$wp_customize->add_setting('custom_ad_plugin_options[display]', array(
+    'default' => 'on',
     'type' => 'option',
 ));
-$wp_customize->add_control('custom_ad_plugin_position_control', array(
-    'label' => '表示位置',
+$wp_customize->add_control('custom_ad_plugin_display_control', array(
+    'label' => '広告注記の表示・非表示',
     'section' => 'custom_ad_plugin_section',
-    'settings' => 'custom_ad_plugin_options[position]',
+    'settings' => 'custom_ad_plugin_options[display]',
+    'type' => 'radio',
+    'choices' => array(
+        'on' => '表示',
+        'off' => '非表示',
+    ),
+));
+
+$wp_customize->add_setting('custom_ad_plugin_options[displayed_post_checkbox]', array(
+    'default' => '',
+    'type' => 'option',
+));
+
+$wp_customize->add_control(new Posts_Checkbox_Custom_Control($wp_customize, 'custom_ad_plugin_displayed_post_checkbox_control', array(
+    'label' => '表示する記事',
+    'section' => 'custom_ad_plugin_section',
+    'settings' => 'custom_ad_plugin_options[displayed_post_checkbox]',
+)));
+
+    // 表示位置の設定
+$wp_customize->add_setting('custom_ad_plugin_options[position_align]', array(
+    'default' => 'above_title_left',
+    'type' => 'option',
+));
+$wp_customize->add_control('custom_ad_plugin_position_align_control', array(
+    'label' => '表示位置・位置',
+    'section' => 'custom_ad_plugin_section',
+    'settings' => 'custom_ad_plugin_options[position_align]',
     'type' => 'select',
     'choices' => array(
-        'above_title' => '記事の上',
-        'below_title' => '記事の下',
+        'above_title_left' => '記事の上・左',
+        'above_title_center' => '記事の上・真ん中',
+        'above_title_right' => '記事の上・右',
+        'below_title_left' => '記事の下・左',
+        'below_title_center' => '記事の下・真ん中',
+        'below_title_right' => '記事の下・右',
     ),
 ));
 
@@ -326,51 +364,6 @@ $wp_customize->add_control('custom_ad_plugin_margin_control', array(
     'settings' => 'custom_ad_plugin_options[margin]',
     'type' => 'text',
 ));
-
-// 位置の設定
-$wp_customize->add_setting('custom_ad_plugin_options[box_align]', array(
-    'default' => 'left',
-    'type' => 'option',
-));
-$wp_customize->add_control('custom_ad_plugin_box_align_control', array(
-    'label' => '位置',
-    'section' => 'custom_ad_plugin_section',
-    'settings' => 'custom_ad_plugin_options[box_align]',
-    'type' => 'select',
-    'choices' => array(
-        'left' => '左',
-        'center' => '中央',
-        'right' => '右',
-    ),
-));
-
-// テキストの表示の設定
-$wp_customize->add_setting('custom_ad_plugin_options[display]', array(
-    'default' => 'on',
-    'type' => 'option',
-));
-$wp_customize->add_control('custom_ad_plugin_display_control', array(
-    'label' => 'テキストの表示',
-    'section' => 'custom_ad_plugin_section',
-    'settings' => 'custom_ad_plugin_options[display]',
-    'type' => 'radio',
-    'choices' => array(
-        'on' => '表示',
-        'off' => '非表示',
-    ),
-));
-
-
-$wp_customize->add_setting('custom_ad_plugin_options[displayed_post_checkbox]', array(
-    'default' => '',
-    'type' => 'option',
-));
-
-$wp_customize->add_control(new Posts_Checkbox_Custom_Control($wp_customize, 'custom_ad_plugin_displayed_post_checkbox_control', array(
-    'label' => '表示する記事',
-    'section' => 'custom_ad_plugin_section',
-    'settings' => 'custom_ad_plugin_options[displayed_post_checkbox]',
-)));
 
 class Reset_Button_Custom_Control extends WP_Customize_Control {
     public $type = 'reset-button';
