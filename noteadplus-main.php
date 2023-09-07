@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 /*
 Plugin Name: NoteAdPlus
 Description: 景品表示法に対応するためのテキスト表示を管理するプラグイン
-Version: 1.0.8
+Version: 1.0.7
 Author: ukidaira
 */
 
@@ -26,12 +26,18 @@ $myUpdateChecker->setBranch('main');
 // 管理画面用のスタイルとスクリプト
 function custom_ad_plugin_admin_scripts() {
     wp_enqueue_style('custom-content-label-plugin-admin', plugins_url('frontend-style.css', __FILE__));
-    wp_enqueue_script('custom-content-label-plugin-admin', plugins_url('noteadplus-scripts.js', __FILE__), array('jquery'));
     wp_enqueue_style('custom-ad-plugin-customizer-style', plugins_url('customizer-style.css', __FILE__));
     wp_enqueue_style('wp-color-picker');
     wp_enqueue_script('wp-color-picker');
 }
 add_action('admin_enqueue_scripts', 'custom_ad_plugin_admin_scripts');
+
+function enqueue_customizer_script() {
+    if (is_customize_preview()) {
+        wp_enqueue_script('noteadplus-scripts', plugins_url('noteadplus-scripts.js', __FILE__), array('jquery', 'customize-controls'), '6.3.1', true);
+    }
+}
+add_action('customize_controls_enqueue_scripts', 'enqueue_customizer_script');
 
 // フロントエンド用のスタイルをエンキュー
 function custom_ad_plugin_frontend_scripts() {
@@ -48,6 +54,7 @@ function custom_ad_shortcode_function() {
     }
     
     $ad_text = isset($options['ad_text']) ? $options['ad_text'] : '広告'; 
+    $width = isset($options['width']) ? $options['width'] : '6'; 
     $border_style = isset($options['border_style']) ? $options['border_style'] : 'solid';
     $border_color = isset($options['border_color']) ? $options['border_color'] : '#000000';
     $bg_color = isset($options['bg_color']) ? $options['bg_color'] : '#FFFFFF';
@@ -58,13 +65,13 @@ function custom_ad_shortcode_function() {
     $margin = isset($options['margin']) ? $options['margin'] : '0';
     $padding = isset($options['padding']) ? $options['padding'] : '0';
     $textAlign = isset($options['text_align']) ? $options['text_align'] : 'center';
-    $width = isset($options['width']) ? $options['width'] : '6'; 
-if (isset($options['position_align'])) {
-    $boxAlignParts = explode('_', $options['position_align']);
-    $boxAlign = end($boxAlignParts);
-} else {
-    $boxAlign = 'left';
-}
+    $position = isset($options['position']) ? $options['position'] : 'above_title_left';
+    $boxAlign = 'left'; // デフォルト
+    if (strpos($position, 'center') !== false) {
+        $boxAlign = 'center';
+    } elseif (strpos($position, 'right') !== false) {
+        $boxAlign = 'right';
+    }
     $margin_values = explode(',', $options['margin']);
     $margin_style = implode('px ', $margin_values) . 'px';
     $ad_style = "width: {$width}%; border: {$borderWidth}px {$border_style} {$border_color}; background-color: {$bg_color}; color: {$text_color}; font-size: {$fontSize}px; border-radius: {$borderRadius}px; margin: {$margin_style} !important; padding: {$padding}px; text-align: {$textAlign};";
@@ -75,6 +82,7 @@ if (isset($options['position_align'])) {
     return $ad_html;
 }
 add_shortcode('custom_ad', 'custom_ad_shortcode_function');
+
 
 function custom_ad_add_to_content( $content ) {
     $options = get_option('custom_ad_plugin_options');
@@ -99,19 +107,15 @@ function custom_ad_add_to_content( $content ) {
     // 広告コードを生成
     $ad_content = do_shortcode('[custom_ad]');
 
-// 広告の表示位置と位置に応じて、広告を追加
-    if (isset($options['position_align'])) {
-        switch ($options['position_align']) {
-            case 'above_title_left':
-            case 'above_title_center':
-            case 'above_title_right':
-                return $ad_content . $content;
-            case 'below_title_left':
-            case 'below_title_center':
-            case 'below_title_right':
-                return $content . $ad_content;
-        }
+    // 広告の表示位置に応じて、広告を追加
+if (isset($options['position'])) {
+    if (strpos($options['position'], 'above_title') !== false) {
+        $content = $ad_content . $content;
+    } elseif (strpos($options['position'], 'below_title') !== false) {
+        $content = $content . $ad_content;
+    }
 }
+return $content;
 
     return $content;
 }
@@ -164,7 +168,7 @@ $wp_customize->add_setting('custom_ad_plugin_options[display]', array(
     'type' => 'option',
 ));
 $wp_customize->add_control('custom_ad_plugin_display_control', array(
-    'label' => '広告注記の表示・非表示',
+    'label' => 'テキストの表示',
     'section' => 'custom_ad_plugin_section',
     'settings' => 'custom_ad_plugin_options[display]',
     'type' => 'radio',
@@ -185,15 +189,15 @@ $wp_customize->add_control(new Posts_Checkbox_Custom_Control($wp_customize, 'cus
     'settings' => 'custom_ad_plugin_options[displayed_post_checkbox]',
 )));
 
-    // 表示位置の設定
-$wp_customize->add_setting('custom_ad_plugin_options[position_align]', array(
+// 表示位置の設定とコントロールを追加
+$wp_customize->add_setting('custom_ad_plugin_options[position]', array(
     'default' => 'above_title_left',
     'type' => 'option',
 ));
-$wp_customize->add_control('custom_ad_plugin_position_align_control', array(
-    'label' => '表示位置・位置',
+$wp_customize->add_control('custom_ad_plugin_position_control', array(
+    'label' => '表示位置',
     'section' => 'custom_ad_plugin_section',
-    'settings' => 'custom_ad_plugin_options[position_align]',
+    'settings' => 'custom_ad_plugin_options[position]',
     'type' => 'select',
     'choices' => array(
         'above_title_left' => '記事の上・左',

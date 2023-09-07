@@ -21,8 +21,9 @@ jQuery(document).ready(function($) {
     $(document).on('click', '.reset-design-button', function() {
         if (confirm('デザインの設定をリセットしますか？')) {
             // カスタマイザーの各設定をデフォルトにリセット
-            wp.customize('custom_ad_plugin_options[position_align]').set('above_title_left');
+            wp.customize('custom_ad_plugin_options[position]').set('above_title_left');
             wp.customize('custom_ad_plugin_options[ad_text]').set('広告');
+			wp.customize('custom_ad_plugin_options[display]').set('on');
             wp.customize('custom_ad_plugin_options[width]').set('6');
             wp.customize('custom_ad_plugin_options[bg_color]').set('#FFFFFF');
             wp.customize('custom_ad_plugin_options[text_color]').set('#333333');
@@ -33,7 +34,6 @@ jQuery(document).ready(function($) {
             wp.customize('custom_ad_plugin_options[border_radius]').set('0');
             wp.customize('custom_ad_plugin_options[padding]').set('0');
             wp.customize('custom_ad_plugin_options[margin]').set('0,0,0,0');
-            wp.customize('custom_ad_plugin_options[display]').set('on');
             wp.customize('custom_ad_plugin_options[displayed_post_checkbox]').set('');
             $('.post-checkbox').prop('checked', false);
 
